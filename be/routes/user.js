@@ -1,15 +1,10 @@
 import { Router } from 'express';
-import dotenv from "dotenv";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { userModel } from '../db.js';
-dotenv.config();
+import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { secrets } from '../config.js';
 const router = Router();
-const secrets = {
-    admin: process.env.ADMIN_SECRET,
-    usaer: process.env.USER_SECRET,
-    employee: process.env.EMPLOYEE_SECRET
-}
 
 router.post('/signup', async (req, res) => {
     try{
@@ -46,7 +41,8 @@ router.post('/login', async (req, res) => {
         if (!passMatch) return res.status(403).json({ message: "Incorrect Credentials" });
         const token = jwt.sign({
             id: existingUser._id,
-            email: existingUser.email
+            email: existingUser.email,
+            role: existingUser.role
         }, secrets[existingUser.role], { expiresIn: '7hr' });
         res.status(201).json({
             message: "Login Successfull",
@@ -59,13 +55,40 @@ router.post('/login', async (req, res) => {
 })
 
 // profile route
-router.get('/profile', async (req, res) => {
+router.get('/profile', authMiddleware() ,async (req, res) => {
+    const { email, role } = req.user;
+    switch (role) {
+        case 'admin':
+            return res.json({
+                role,
+                email,
+                dashboard: 'Welcome to the Admin Dashboard',
+                features: ['BroadcastingDashboard']
+            });
 
-})
+        case 'employee':
+            return res.json({
+                role,
+                email,
+                dashboard: 'Welcome to the Employee Dashboard',
+                features: ['EmployeeDashboard']
+            });
+
+        case 'user':
+            return res.json({
+                role,
+                email,
+                dashboard: 'Welcome to the User Dashboard',
+                features: ['UserDashboard']
+            });
+        default:
+            return res.status(400).json({ error: 'Invalid role in token' });
+    }
+});
 
 // logout route
 router.get('/logout', async (req, res) => {
-    
+
 })
 
 
