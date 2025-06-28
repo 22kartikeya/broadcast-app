@@ -10,7 +10,7 @@ const AdminDashboard = () => {
         e.preventDefault();
         try{
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:3000/site/broadcast', {
+            await axios.post('http://localhost:3000/send/broadcast', {
                 role: targetRole, message
             },{
                 headers: {

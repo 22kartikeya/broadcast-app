@@ -21,10 +21,10 @@ const Signup = () => {
                     navigate('/AdminDashboard');
                     break;
                 case 'employee':
-                    navigate('/landing');
+                    navigate('/EmployeeDashboard');
                     break;
                 case 'user':
-                    navigate('/user/dashboard');
+                    navigate('/UserDashboard');
                     break;
             }
             console.log(`Signed up as: ${email}`);

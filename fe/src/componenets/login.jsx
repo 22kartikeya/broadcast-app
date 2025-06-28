@@ -22,10 +22,10 @@ const Login = () => {
                     navigate('/AdminDashboard');
                     break;
                 case 'employee':
-                    navigate('/landing');
+                    navigate('/EmployeeDashboard');
                     break;
                 case 'user':
-                    navigate('/user/dashboard');
+                    navigate('/UserDashboard');
                     break;
             }
             console.log(`Logged in as: ${email}`);
