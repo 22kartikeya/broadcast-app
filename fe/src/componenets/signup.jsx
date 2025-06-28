@@ -1,14 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('');
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        alert(`Signed up as: ${email}`);
+        try {
+            const response = await axios.post('http://localhost:3000/site/signup', {
+                email, password, role
+            });
+            const { token } = response.data;
+            localStorage.setItem("token", token);
+            switch (role) {
+                case 'admin':
+                    navigate('/AdminDashboard');
+                    break;
+                case 'employee':
+                    navigate('/landing');
+                    break;
+                case 'user':
+                    navigate('/user/dashboard');
+                    break;
+            }
+            console.log(`Signed up as: ${email}`);
+        } catch (e) {
+            console.log(`Signin failed: ${e.message}`);
+        }
     };
 
     return (
@@ -66,6 +88,8 @@ const Signup = () => {
                                 id="role"
                                 name="role"
                                 required
+                                onChange={(e) => setRole(e.target.value)}
+                                value={role}
                                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6">
                                 <option value="">-- Select a role --</option> 
                                 <option value="admin">Admin</option>

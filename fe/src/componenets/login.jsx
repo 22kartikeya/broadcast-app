@@ -1,15 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        alert(`Logged in as: ${email}`);
+        try{
+            const response = await axios.post('http://localhost:3000/site/login', {
+                email, password
+            });
+            const { token } = response.data;
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload.role;
+            localStorage.setItem("token", token);
+            switch (role) {
+                case 'admin':
+                    navigate('/AdminDashboard');
+                    break;
+                case 'employee':
+                    navigate('/landing');
+                    break;
+                case 'user':
+                    navigate('/user/dashboard');
+                    break;
+            }
+            console.log(`Logged in as: ${email}`);
+        }catch(e){
+            console.log(`Login failed: ${e.message}`);
+        }
     };
 
     return (
