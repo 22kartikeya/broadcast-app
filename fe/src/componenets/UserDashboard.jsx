@@ -4,7 +4,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid'
 import { useEffect } from "react";
 
 const UserDashboard = () => {
-    const [broadcast, setBroadcast] = useState(null);
+    const [broadcast, setBroadcast] = useState([]);
     useEffect(() => {
         const fetchMessages =  async () => {
             try{
@@ -15,7 +15,7 @@ const UserDashboard = () => {
                         headers: { token }
                     }
                 );
-                if(res.status == 200) setBroadcast(res.data.message);
+                if(res.status == 200) setBroadcast(res.data.giveBroadcast || []);
             }catch(e){
                 console.error("Broadcast Fetch failed:", e);
             }
@@ -23,8 +23,21 @@ const UserDashboard = () => {
         fetchMessages();
     }, []);
 
+    async function handleDisable (){
+        const token = localStorage.getItem('token');
+        if(!token) return;
+        try{
+            await axios.post('http://localhost:3000/send/disable-broadcast', {}, 
+                {headers: {token}
+            });
+            setBroadcast([]);
+        }catch(e){
+            console.error('Failed to disabel broadcast:', e);
+        }
+    }
+
     return (<>
-        {broadcast && (
+        {broadcast.map((msg, index) => (
         <div className="relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
                 <div
                     aria-hidden="true"
@@ -52,26 +65,28 @@ const UserDashboard = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <p className="text-sm/6 text-gray-900">
-                        {broadcast}
+                        {msg.message}
                     </p>
-                    <a
-                        href="#"
+                    <button
                         className="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-xs hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                        onClick={handleDisable}
                     >
                         Disable <span aria-hidden="true">&rarr;</span>
-                    </a>
+                    </button>
                 </div>
                 <div className="flex flex-1 justify-end">
                     <button 
                         type="button" 
                         className="-m-3 p-3 focus-visible:-outline-offset-4"
-                        onClick={() => setBroadcast(null)}
+                        onClick={() => setBroadcast((prev) => 
+                            prev.filter((_, i) => i != index)
+                        )}
                     >
                         <XMarkIcon aria-hidden="true" className="size-5 text-gray-900" />
                     </button>
                 </div>
          </div>
-        )}
+        ))}
         <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
                 <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">User Dashboard</h2>

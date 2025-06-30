@@ -82,15 +82,15 @@ const Signup = () => {
                             </div>
                         </div>
 
-                        <div class="max-w-sm mx-auto">
-                            <label for="role" class="block mb-2 text-sm font-medium text-gray-800">Role</label>
+                        <div className="max-w-sm mx-auto">
+                            <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-800">Role</label>
                             <select 
                                 id="role"
                                 name="role"
                                 required
                                 onChange={(e) => setRole(e.target.value)}
                                 value={role}
-                                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6">
+                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6">
                                 <option value="">-- Select a role --</option> 
                                 <option value="admin">Admin</option>
                                 <option value="user">User</option>
