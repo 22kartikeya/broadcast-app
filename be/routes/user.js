@@ -88,7 +88,7 @@ router.get('/profile', authMiddleware() ,async (req, res) => {
 
 // logout route
 router.get('/logout', async (req, res) => {
-
+    return res.status(200).json({message: "Logged out successfully"})
 })
 
 

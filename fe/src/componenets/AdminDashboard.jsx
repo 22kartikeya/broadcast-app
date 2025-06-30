@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
     const [targetRole, setTargetRole] = useState('');
     const [message, setMessage] = useState('');
     const [toast, setToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         try{
@@ -36,9 +38,31 @@ const AdminDashboard = () => {
             }, 3000);
         }
     }
+    async function handleLogout() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            await axios.get('http://localhost:3000/site/logout', {
+                headers: { token }
+            });
+            localStorage.removeItem('token');
+            navigate('/');
+        } catch (e) {
+            console.error('Logout failed:', e);
+        }
+    }
 
     return (
         <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
+            <div className="flex justify-center">
+                <button
+                    type="button"
+                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+            </div>
             <div className="mx-auto max-w-2xl text-center">
                 <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">Admin Dashboard</h2>
                 <p className="mt-2 text-lg/8 text-gray-500">Broadcast Your Message</p>

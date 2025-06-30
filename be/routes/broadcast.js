@@ -29,7 +29,8 @@ router.get('/broadcast', authMiddleware(), async (req, res) => {
             giveBroadcast: giveBroadcast.map (b => ({
                 message: b.message,
                 createdAt: b.createdAt
-            }))
+            })),
+            isBroadcastDisabled: user.isBroadcastDisabled
         });
     } catch (e) {
         console.error('Broadcast fetch error:', e);
@@ -45,6 +46,17 @@ router.post('/disable-broadcast', authMiddleware(), async (req, res) => {
     }catch(e){
         console.log("Disabled broadcast error:", e);
         return res.status(500).json({error: "Internal server error"});
+    }
+});
+
+router.post('/enable-broadcast', authMiddleware(), async (req, res) => {
+    try {
+        const { email } = req.user;
+        await userModel.updateOne({ email }, { $set: { isBroadcastDisabled: false} });
+        return res.status(200).json({ message: "Broadcast is Enabled" });
+    } catch (e) {
+        console.log("Enable broadcast error:", e);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
